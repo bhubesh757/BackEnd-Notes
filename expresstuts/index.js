@@ -3,28 +3,24 @@ const path = require('path')
 const jokes  = require('./public/jokes')
 const app = express();
 
-const moment = require('moment')
+
+const logger = require('./middleware/logger');
 
 
-const logger = (req , res , next) => {
-    console.log(
-        `${req.protocol}://${req.get('host')}${req.originalUrl
-    }: ${moment().format()}`
-    );
-    next();
-};
 
 // middleware
 
-app.use(logger);
+// app.use(logger);
 
 
-// gets all the jokes
- 
-app.get('/api/jokes' , (req , res) => {
-    // using some json
-    res.json(jokes);
-});
+
+// Body parsing
+
+app.use(express.json());
+app.use(express.urlencoded({
+    extended : false
+}));
+
 
 
 
@@ -38,6 +34,9 @@ app.get('/api/jokes' , (req , res) => {
 // the use of static file is it doesnt get into the directory file ,  
 // the main usage is the routing 
 app.use(express.static(path.join(__dirname , 'public')));
+
+// just routing to the jokes
+app.use('/api/jokes' , require('./routes/api/jokes'))
 
 const PORT = process.env.PORT || 3030;
 
